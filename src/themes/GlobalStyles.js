@@ -27,6 +27,9 @@ const GlobalStyle = createGlobalStyle`
         font-family: "RedHatText";
         background-color: ${({ theme }) => theme.colors.rose100};
     }
+    button {
+        cursor: pointer;
+    }
 `;
 
 export default GlobalStyle;

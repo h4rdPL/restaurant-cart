@@ -1,6 +1,17 @@
 import React from "react";
 import data from "../../data.json";
 import styled from "styled-components";
+
+const MenuItemWrapper = styled.div`
+  display: grid;
+  width: 100%;
+  @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    grid-template-columns: repeat(3, minmax(0, 1800px));
+    grid-gap: 1rem;
+    justify-content: center;
+  }
+`;
+
 const ImageWrapper = styled.div`
   position: relative;
   width: 100%;
@@ -21,6 +32,7 @@ const Button = styled.button`
   justify-content: center;
   align-items: center;
   gap: 0.5rem;
+  font-size: 0.7rem;
   font-weight: bold;
   background-color: #fff;
   padding: 0.5rem 1.75rem;
@@ -51,13 +63,16 @@ const DataInfo = styled.div`
   margin: 1.5rem 0;
 `;
 
-export const MenuItem = () => {
+export const MenuItem = ({ isDesktop }) => {
   return (
-    <>
+    <MenuItemWrapper>
       {data.map((item, index) => (
         <div key={index}>
           <ImageWrapper>
-            <Photo src={item.image.mobile} alt={item.name} />
+            <Photo
+              src={isDesktop ? item.image.desktop : item.image.mobile}
+              alt={item.name}
+            />
             <Button>
               <img src="/images/icon-add-to-cart.svg" alt="Add to Cart" />
               Add to Cart
@@ -70,6 +85,6 @@ export const MenuItem = () => {
           </DataInfo>
         </div>
       ))}
-    </>
+    </MenuItemWrapper>
   );
 };

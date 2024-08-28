@@ -2,6 +2,7 @@ const theme = {
   colors: {
     red: "hsl(14, 86%, 42%)",
     green: "hsl(159, 69%, 38%)",
+    white: "#fff",
     rose50: "hsl(20, 50%, 98%)",
     rose100: "hsl(13, 31%, 94%)",
     rose300: "hsl(14, 25%, 72%)",

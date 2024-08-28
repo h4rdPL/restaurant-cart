@@ -25,6 +25,7 @@ const GlobalStyle = createGlobalStyle`
 
     body {
         font-family: "RedHatText";
+        background-color: ${({ theme }) => theme.colors.rose100};
     }
 `;
 

@@ -126,23 +126,54 @@ const DataInfo = styled.div`
   margin: 1.5rem 0;
 `;
 
-export const MenuItem = ({ isDesktop }) => {
-  const [selectedIndex, setSelectedIndex] = useState(null);
-  const decrement = "/images/icon-decrement-quantity.svg";
-  const increment = "/images/icon-increment-quantity.svg";
+export const MenuItem = ({ isDesktop, addToCart, removeFromCart }) => {
+  // Initialize items state with quantity set to 0 for each item
+  const [items, setItems] = useState(
+    data.map((item) => ({ ...item, quantity: 0 }))
+  );
+
   const handlePhotoClick = (index) => {
-    setSelectedIndex((prevIndex) => (prevIndex === index ? null : index));
+    setItems((prevItems) =>
+      prevItems.map((item, i) =>
+        i === index ? { ...item, isSelected: !item.isSelected } : item
+      )
+    );
+  };
+
+  const handleClickIncrement = (item) => {
+    setItems((prevItems) =>
+      prevItems.map((prevItem) =>
+        prevItem.name === item.name
+          ? { ...prevItem, quantity: (prevItem.quantity || 0) + 1 }
+          : prevItem
+      )
+    );
+    addToCart(item);
+  };
+
+  const handleClickDecrement = (item) => {
+    setItems((prevItems) =>
+      prevItems.map((prevItem) =>
+        prevItem.name === item.name && prevItem.quantity > 0
+          ? { ...prevItem, quantity: prevItem.quantity - 1 }
+          : prevItem
+      )
+    );
+
+    if (item.quantity > 0) {
+      removeFromCart(item);
+    }
   };
 
   return (
     <MenuItemWrapper>
-      {data.map((item, index) => (
+      {items.map((item, index) => (
         <div key={index}>
           <ImageWrapper>
             <Photo
               src={isDesktop ? item.image.desktop : item.image.mobile}
               alt={item.name}
-              isSelected={selectedIndex === index}
+              isSelected={item.isSelected}
               onClick={() => handlePhotoClick(index)}
             />
             <Button>
@@ -151,9 +182,17 @@ export const MenuItem = ({ isDesktop }) => {
                 Add to Cart
               </Content>
               <ContentOnHover>
-                <HoverImage src={decrement} alt="minus" />
-                <Quantity>0</Quantity>
-                <HoverImage src={increment} alt="plus" />
+                <HoverImage
+                  onClick={() => handleClickDecrement(item)}
+                  src="/images/icon-decrement-quantity.svg"
+                  alt="minus"
+                />
+                <Quantity>{item.quantity}</Quantity>
+                <HoverImage
+                  onClick={() => handleClickIncrement(item)}
+                  src="/images/icon-increment-quantity.svg"
+                  alt="plus"
+                />
               </ContentOnHover>
             </Button>
           </ImageWrapper>

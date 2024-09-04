@@ -21,6 +21,7 @@ const Menu = styled.div`
 
 const App = () => {
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1440);
+  const [cartItems, setCartItems] = useState([]);
 
   const updateMedia = () => {
     setIsDesktop(window.innerWidth >= 1440);
@@ -31,16 +32,54 @@ const App = () => {
     return () => window.removeEventListener("resize", updateMedia);
   }, []);
 
+  const addToCart = (item) => {
+    setCartItems((prevItems) => {
+      const itemExists = prevItems.find(
+        (cartItem) => cartItem.name === item.name
+      );
+
+      if (itemExists) {
+        return prevItems.map((cartItem) =>
+          cartItem.name === item.name
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
+            : cartItem
+        );
+      } else {
+        return [...prevItems, { ...item, quantity: 1 }];
+      }
+    });
+  };
+
+  const removeFromCart = (item) => {
+    setCartItems((prevItems) => {
+      const itemExists = prevItems.find(
+        (cartItem) => cartItem.name === item.name
+      );
+
+      if (itemExists.quantity === 1) {
+        return prevItems.filter((cartItem) => cartItem.name !== item.name);
+      } else {
+        return prevItems.map((cartItem) =>
+          cartItem.name === item.name
+            ? { ...cartItem, quantity: cartItem.quantity - 1 }
+            : cartItem
+        );
+      }
+    });
+  };
+
   return (
-    <>
-      <MenuItemWrapper>
-        <Menu>
-          <Heading>Desserts</Heading>
-          <MenuItem isDesktop={isDesktop} />
-        </Menu>
-        <CartItem />
-      </MenuItemWrapper>
-    </>
+    <MenuItemWrapper>
+      <Menu>
+        <Heading>Desserts</Heading>
+        <MenuItem
+          isDesktop={isDesktop}
+          addToCart={addToCart}
+          removeFromCart={removeFromCart}
+        />
+      </Menu>
+      <CartItem cartItems={cartItems} />
+    </MenuItemWrapper>
   );
 };
 

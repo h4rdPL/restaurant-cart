@@ -19,10 +19,6 @@ const CartHeading = styled.h2`
   color: ${({ theme }) => theme.colors.red};
 `;
 
-const CartImage = styled.img`
-  width: 40%;
-`;
-
 const CartParagraph = styled.p`
   font-size: 1rem;
   color: ${({ theme }) => theme.colors.rose400};
@@ -44,9 +40,34 @@ const ItemWrapper = styled.div`
   justify-content: space-between;
   width: 100%;
   padding: 0.5rem 0;
+  align-items: center;
+`;
+
+const InnerCartWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
+const QuantityPriceWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+`;
+
+const RemoveIcon = styled.img`
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  border-radius: 50px;
+  padding: 2px;
+  border: 2px solid ${({ theme }) => theme.colors.rose300};
 `;
 
 const TotalWrapper = styled.div`
+  display: flex;
+  gap: 1.5rem;
+  flex-direction: column;
   margin-top: auto;
   padding-top: 1rem;
   width: 100%;
@@ -54,12 +75,46 @@ const TotalWrapper = styled.div`
 `;
 
 const TotalPrice = styled.p`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: 1rem;
+`;
+
+const Price = styled.p`
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: ${({ theme }) => theme.colors.black};
+`;
+
+const Button = styled.button`
+  background-color: ${({ theme }) => theme.colors.red};
+  color: ${({ theme }) => theme.colors.white};
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 50px;
+`;
+
+const CarbonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background-color: ${({ theme }) => theme.colors.rose100};
+  border-radius: 5px;
+`;
+
+const QuantitySpan = styled.span`
   color: ${({ theme }) => theme.colors.red};
   font-weight: bold;
 `;
 
-export const CartItem = ({ cartItems }) => {
+const PriceSpan = styled.span`
+  font-weight: normal;
+`;
+
+export const CartItem = ({ cartItems, onRemove }) => {
   const calculateTotalPrice = () => {
     return cartItems
       .reduce((total, item) => total + item.price * item.quantity, 0)
@@ -71,24 +126,44 @@ export const CartItem = ({ cartItems }) => {
       <CartHeading>Your Cart ({cartItems.length})</CartHeading>
       {cartItems.length === 0 ? (
         <TestWrapper>
-          <CartImage
-            src="/images/illustration-empty-cart.svg"
-            alt="Add to Cart"
-          />
+          <img src="/images/illustration-empty-cart.svg" alt="Empty Cart" />
           <CartParagraph>Your added items will appear here</CartParagraph>
         </TestWrapper>
       ) : (
         <>
           {cartItems.map((item, index) => (
             <ItemWrapper key={index}>
-              <CartParagraph>{item.name}</CartParagraph>
-              <CartParagraph>
-                ${item.price.toFixed(2)} x {item.quantity}
-              </CartParagraph>
+              <InnerCartWrapper>
+                <CartParagraph>{item.name}</CartParagraph>
+                <QuantityPriceWrapper>
+                  <CartParagraph>
+                    <QuantitySpan>{item.quantity}x</QuantitySpan> @{" "}
+                    <PriceSpan>${item.price.toFixed(2)}</PriceSpan>
+                  </CartParagraph>
+                  <CartParagraph>
+                    ${item.price.toFixed(2) * item.quantity}
+                  </CartParagraph>
+                </QuantityPriceWrapper>
+              </InnerCartWrapper>
+              <RemoveIcon
+                src="/images/icon-remove-item.svg"
+                alt="Remove item"
+                onClick={() => onRemove(item.name)}
+              />
             </ItemWrapper>
           ))}
           <TotalWrapper>
-            <TotalPrice>Total: ${calculateTotalPrice()}</TotalPrice>
+            <TotalPrice>
+              <p>Order Total</p>
+              <Price>${calculateTotalPrice()}</Price>
+            </TotalPrice>
+            <CarbonWrapper>
+              <img src="/images/icon-carbon-neutral.svg" alt="Carbon neutral" />
+              <p>
+                This is a <b>carbon-neutral</b> delivery
+              </p>
+            </CarbonWrapper>
+            <Button>Confirm Order</Button>
           </TotalWrapper>
         </>
       )}

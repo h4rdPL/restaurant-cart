@@ -3,6 +3,7 @@ const theme = {
     red: "hsl(14, 86%, 42%)",
     green: "hsl(159, 69%, 38%)",
     white: "#fff",
+    black: "#000",
     rose50: "hsl(20, 50%, 98%)",
     rose100: "hsl(13, 31%, 94%)",
     rose300: "hsl(14, 25%, 72%)",
@@ -12,6 +13,7 @@ const theme = {
   },
   breakpoints: {
     desktop: "1440px",
+    tablet: "750px",
   },
 };
 

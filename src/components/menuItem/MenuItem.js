@@ -1,11 +1,15 @@
-import React, { useState } from "react";
-import data from "../../data.json";
+import React from "react";
 import styled from "styled-components";
 
 const MenuItemWrapper = styled.div`
   display: grid;
   width: 100%;
 
+  @media (min-width: ${({ theme }) => theme.breakpoints.tablet}) {
+    grid-template-columns: repeat(2, minmax(0, 1800px));
+    grid-gap: 1rem;
+    justify-content: center;
+  }
   @media (min-width: ${({ theme }) => theme.breakpoints.desktop}) {
     grid-template-columns: repeat(3, minmax(0, 1800px));
     grid-gap: 1rem;
@@ -126,42 +130,22 @@ const DataInfo = styled.div`
   margin: 1.5rem 0;
 `;
 
-export const MenuItem = ({ isDesktop, addToCart, removeFromCart }) => {
-  // Initialize items state with quantity set to 0 for each item
-  const [items, setItems] = useState(
-    data.map((item) => ({ ...item, quantity: 0 }))
-  );
-
-  const handlePhotoClick = (index) => {
-    setItems((prevItems) =>
-      prevItems.map((item, i) =>
-        i === index ? { ...item, isSelected: !item.isSelected } : item
-      )
-    );
-  };
+export const MenuItem = ({
+  isDesktop,
+  isTablet,
+  addToCart,
+  removeFromCart,
+  items,
+}) => {
+  const handlePhotoClick = () => {};
 
   const handleClickIncrement = (item) => {
-    setItems((prevItems) =>
-      prevItems.map((prevItem) =>
-        prevItem.name === item.name
-          ? { ...prevItem, quantity: (prevItem.quantity || 0) + 1 }
-          : prevItem
-      )
-    );
     addToCart(item);
   };
 
   const handleClickDecrement = (item) => {
-    setItems((prevItems) =>
-      prevItems.map((prevItem) =>
-        prevItem.name === item.name && prevItem.quantity > 0
-          ? { ...prevItem, quantity: prevItem.quantity - 1 }
-          : prevItem
-      )
-    );
-
     if (item.quantity > 0) {
-      removeFromCart(item);
+      removeFromCart(item.name);
     }
   };
 
@@ -171,7 +155,13 @@ export const MenuItem = ({ isDesktop, addToCart, removeFromCart }) => {
         <div key={index}>
           <ImageWrapper>
             <Photo
-              src={isDesktop ? item.image.desktop : item.image.mobile}
+              src={
+                isDesktop
+                  ? item.image.desktop
+                  : isTablet
+                  ? item.image.tablet
+                  : item.image.mobile
+              }
               alt={item.name}
               isSelected={item.isSelected}
               onClick={() => handlePhotoClick(index)}

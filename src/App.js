@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import styled, { useTheme } from "styled-components";
 import { MenuItem } from "./components/menuItem/MenuItem";
 import { CartItem } from "./components/cartItem/CartItem";
+import data from "../src/data.json";
 
 const MenuItemWrapper = styled.div`
   padding: 1.5rem 2rem;
@@ -20,11 +21,25 @@ const Menu = styled.div`
 `;
 
 const App = () => {
-  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 1440);
+  const theme = useTheme();
+  const [isDesktop, setIsDesktop] = useState(
+    window.innerWidth >= parseInt(theme.breakpoints.desktop)
+  );
+  const [isTablet, setIsTablet] = useState(
+    window.innerWidth >= parseInt(theme.breakpoints.tablet) &&
+      window.innerWidth < parseInt(theme.breakpoints.desktop)
+  );
   const [cartItems, setCartItems] = useState([]);
+  const [menuItems, setMenuItems] = useState(
+    data.map((item) => ({ ...item, quantity: 0 }))
+  );
 
   const updateMedia = () => {
-    setIsDesktop(window.innerWidth >= 1440);
+    setIsDesktop(window.innerWidth >= parseInt(theme.breakpoints.desktop));
+    setIsTablet(
+      window.innerWidth >= parseInt(theme.breakpoints.tablet) &&
+        window.innerWidth < parseInt(theme.breakpoints.desktop)
+    );
   };
 
   useEffect(() => {
@@ -48,24 +63,26 @@ const App = () => {
         return [...prevItems, { ...item, quantity: 1 }];
       }
     });
+
+    setMenuItems((prevItems) =>
+      prevItems.map((menuItem) =>
+        menuItem.name === item.name
+          ? { ...menuItem, quantity: (menuItem.quantity || 0) + 1 }
+          : menuItem
+      )
+    );
   };
 
-  const removeFromCart = (item) => {
-    setCartItems((prevItems) => {
-      const itemExists = prevItems.find(
-        (cartItem) => cartItem.name === item.name
-      );
+  const onRemove = (itemName) => {
+    setCartItems((prevItems) =>
+      prevItems.filter((cartItem) => cartItem.name !== itemName)
+    );
 
-      if (itemExists.quantity === 1) {
-        return prevItems.filter((cartItem) => cartItem.name !== item.name);
-      } else {
-        return prevItems.map((cartItem) =>
-          cartItem.name === item.name
-            ? { ...cartItem, quantity: cartItem.quantity - 1 }
-            : cartItem
-        );
-      }
-    });
+    setMenuItems((prevItems) =>
+      prevItems.map((menuItem) =>
+        menuItem.name === itemName ? { ...menuItem, quantity: 0 } : menuItem
+      )
+    );
   };
 
   return (
@@ -74,11 +91,13 @@ const App = () => {
         <Heading>Desserts</Heading>
         <MenuItem
           isDesktop={isDesktop}
+          isTablet={isTablet}
           addToCart={addToCart}
-          removeFromCart={removeFromCart}
+          removeFromCart={onRemove}
+          items={menuItems}
         />
       </Menu>
-      <CartItem cartItems={cartItems} />
+      <CartItem cartItems={cartItems} onRemove={onRemove} />
     </MenuItemWrapper>
   );
 };
